@@ -1,4 +1,4 @@
-module github.com/dengmengmian/ghelper
+module github.com/dengmengmian/Ghelper
 
 go 1.18
 
