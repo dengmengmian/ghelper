@@ -6,9 +6,8 @@
 package gid
 
 import (
-	"testing"
-
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestGenShortID(t *testing.T) {
@@ -35,5 +34,29 @@ func BenchmarkGenShortIDTimeConsuming(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		GenShortID()
+	}
+}
+
+func TestGenShortIDNoDuplicates(t *testing.T) {
+	seenIDs := make(map[string]struct{})
+
+	for i := 0; i < 10000; i++ {
+		id := GenShortID()
+		if _, exists := seenIDs[id]; exists {
+			t.Errorf("Duplicate ID generated: %s", id)
+		}
+		seenIDs[id] = struct{}{}
+	}
+}
+
+func TestGenShortIDNoDuplicatesLenth(t *testing.T) {
+	seenIDs := make(map[string]struct{})
+
+	for i := 0; i < 10000; i++ {
+		id := GenShortID(WithNumber(6))
+		if _, exists := seenIDs[id]; exists {
+			t.Errorf("Duplicate ID generated: %s", id)
+		}
+		seenIDs[id] = struct{}{}
 	}
 }

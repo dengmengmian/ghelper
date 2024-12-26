@@ -10,9 +10,9 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
+	"fmt"
 	"os"
 	"time"
-	// redis "github.com/go-redis/redis"
 )
 
 const (
@@ -27,7 +27,8 @@ var (
 func init() {
 	hostname, err := os.Hostname()
 	if err != nil {
-		panic(err)
+		fmt.Println("Failed to get hostname:", err)
+		return
 	}
 	_serverHash = sha256hash(hostname)[0:2]
 	for i, char := range all {
@@ -41,31 +42,62 @@ type Options struct {
 	EndWithHost   bool
 }
 
-func Generate(opt Options) string {
-	data, _ := generateRandomBytes(opt.Number)
+type Option func(*Options)
 
+func WithNumber(number int) Option {
+	return func(o *Options) {
+		o.Number = number
+	}
+}
+
+func WithStartWithYear(startWithYear bool) Option {
+	return func(o *Options) {
+		o.StartWithYear = startWithYear
+	}
+}
+
+func WithEndWithHost(endWithHost bool) Option {
+	return func(o *Options) {
+		o.EndWithHost = endWithHost
+	}
+}
+
+func Generate(opt Options) (string, error) {
 	var buffer bytes.Buffer
+	var randomLength = opt.Number
+
 	if opt.StartWithYear {
 		year := time.Now().UTC().Format("06")
 		buffer.WriteString(year)
-	}
-
-	for _, b := range data {
-		pick := b % 61
-		buffer.WriteRune(_chars[pick])
+		randomLength -= len(year)
 	}
 
 	if opt.EndWithHost {
 		buffer.WriteString(_serverHash)
+		randomLength -= len(_serverHash)
 	}
 
-	return buffer.String()
+	if randomLength <= 0 {
+		return "", fmt.Errorf("generated ID length is too short")
+	}
+
+	data, err := generateRandomBytes(randomLength)
+	if err != nil {
+		return "", fmt.Errorf("failed to generate random bytes: %v", err)
+	}
+
+	for _, b := range data {
+		pick := int(b) % 62
+		buffer.WriteRune(_chars[pick])
+	}
+
+	return buffer.String(), nil
 }
 
 func sha256hash(text string) string {
 	rawBytes := []byte(text)
 	h := sha256.Sum256(rawBytes)
-	return base64.StdEncoding.EncodeToString(h[:])
+	return base64.URLEncoding.EncodeToString(h[:])[:2] // 使用 URL 安全的 Base64 编码并截取前2个字符
 }
 
 // GenerateRandomBytes returns securely generated random bytes.
