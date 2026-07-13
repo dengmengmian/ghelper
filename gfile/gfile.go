@@ -3,6 +3,8 @@
 // license that can be found in the LICENSE file. The original repo for
 // this file is https://github.com/dengmengmian/ghelper
 
+// Package gfile provides file system utility functions such as copying,
+// directory creation, permission checking, and path handling.
 package gfile
 
 import (

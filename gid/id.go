@@ -3,6 +3,8 @@
 // license that can be found in the LICENSE file. The original repo for
 // this file is https://github.com/dengmengmian/ghelper
 
+// Package gid provides unique ID generation utilities including short IDs,
+// UUIDs, and order numbers.
 package gid
 
 import "strings"

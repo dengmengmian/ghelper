@@ -3,6 +3,8 @@
 // license that can be found in the LICENSE file. The original repo for
 // this file is https://github.com/dengmengmian/ghelper
 
+// Package gip provides client IP extraction from HTTP requests, respecting
+// common reverse-proxy headers such as X-Forwarded-For and X-Real-IP.
 package gip
 
 import (

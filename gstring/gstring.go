@@ -3,6 +3,8 @@
 // license that can be found in the LICENSE file. The original repo for
 // this file is https://github.com/dengmengmian/ghelper
 
+// Package gstring provides common string utilities including JSON conversion,
+// email validation, random string generation, and MD5 hashing.
 package gstring
 
 import (
@@ -14,15 +16,14 @@ import (
 	"time"
 )
 
-// StringToJson string转josn
-func StringToJson(ts string) map[string]interface{} {
+// StringToJson string转json
+func StringToJson(ts string) (map[string]interface{}, error) {
 	var jsonObj map[string]interface{}
 	err := json.Unmarshal([]byte(ts), &jsonObj)
 	if err != nil {
-		fmt.Println("解析JSON失败:", err)
-		return nil
+		return nil, err
 	}
-	return jsonObj
+	return jsonObj, nil
 }
 
 func IsEmail(b []byte) bool {

@@ -18,10 +18,10 @@ func FetchOrderNum(uid int) string {
 
 // randChars 生成随机数字
 func randChars(l int) string {
+	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
 	var bs []byte
 	for i := 0; i < l; i++ {
-		// 下种子一定要在循环内 否则容易出现随机数相同的情况
-		rand.New(rand.NewSource(time.Now().UnixNano()))
+		bs = append(bs, byte('0'+rng.Intn(10)))
 	}
 	return string(bs)
 }

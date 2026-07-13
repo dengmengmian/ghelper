@@ -3,6 +3,8 @@
 // license that can be found in the LICENSE file. The original repo for
 // this file is https://github.com/dengmengmian/ghelper
 
+// Package ghttp provides an HTTP client with support for custom headers,
+// cookies, timeout, proxy, TLS configuration, compression, and debugging.
 package ghttp
 
 import (
@@ -21,19 +23,18 @@ import (
 )
 
 var (
-	// DefaultDialer
+	// DefaultDialer is the default net.Dialer used by the HTTP client.
 	DefaultDialer = &net.Dialer{Timeout: 2000 * time.Millisecond}
-	// DefaultTransport
+	// DefaultTransport is the default HTTP transport.
 	DefaultTransport http.RoundTripper = &http.Transport{Dial: DefaultDialer.Dial, Proxy: http.ProxyFromEnvironment}
-	// DefaultClient
-	DefaultClient = &http.Client{Transport: DefaultTransport}
-	// proxyTransport
+	// DefaultClient is the default HTTP client.
+	DefaultClient  = &http.Client{Transport: DefaultTransport}
 	proxyTransport http.RoundTripper
-	// proxyClient
-	proxyClient *http.Client
+	proxyClient    *http.Client
 )
 
-// Request ghttp request lib
+// Request represents an HTTP request to be sent.
+// It supports custom headers, cookies, timeout, proxy, compression, and more.
 type Request struct {
 	headers           []headerElements
 	Method            string

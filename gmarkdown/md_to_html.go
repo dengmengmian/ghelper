@@ -3,6 +3,8 @@
 // license that can be found in the LICENSE file. The original repo for
 // this file is https://github.com/dengmengmian/ghelper
 
+// Package gmarkdown converts Markdown content to HTML with CommonMark
+// extensions and configurable renderer options.
 package gmarkdown
 
 import (

@@ -30,11 +30,13 @@ func IsNumeric(s string) bool {
 	if length == 0 {
 		return false
 	}
+	dotCount := 0
 	for i := 0; i < len(s); i++ {
 		if s[i] == '-' && i == 0 {
 			continue
 		}
 		if s[i] == '.' {
+			dotCount++
 			if i > 0 && i < len(s)-1 {
 				continue
 			} else {
@@ -45,7 +47,7 @@ func IsNumeric(s string) bool {
 			return false
 		}
 	}
-	return true
+	return dotCount <= 1
 }
 
 // UcFirst returns a copy of the string s with the first letter mapped to its upper case.

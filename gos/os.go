@@ -3,6 +3,8 @@
 // license that can be found in the LICENSE file. The original repo for
 // this file is https://github.com/dengmengmian/ghelper
 
+// Package gos provides operating-system detection and user-home directory
+// resolution across Windows, Linux, and macOS.
 package gos
 
 import (
