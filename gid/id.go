@@ -7,11 +7,10 @@
 // UUIDs, and order numbers.
 package gid
 
-import "strings"
-
 // GenShortID generates a short unique ID with the specified options.
-// By default it produces a 6-character lowercase string.
-// Available options: WithNumber, WithStartWithYear, WithEndWithHost.
+// By default it produces a 6-character string drawn from a 62-character
+// alphabet (a-z, A-Z, 0-9). Available options: WithNumber,
+// WithStartWithYear, WithEndWithHost.
 func GenShortID(options ...Option) (string, error) {
 	opt := Options{
 		Number:        6,
@@ -25,5 +24,5 @@ func GenShortID(options ...Option) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return strings.ToLower(id), nil
+	return id, nil
 }

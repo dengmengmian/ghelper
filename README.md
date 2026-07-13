@@ -55,8 +55,8 @@ gstring.Md5([]byte("hello"))                // "5d41402abc4b2a76b9719d911017c592
 
 import "github.com/dengmengmian/ghelper/gid"
 
-// Short 6-character unique ID
-id, err := gid.GenShortID()                          // e.g. "a1b2c3"
+// Short 6-character unique ID (mixed-case alphanumeric)
+id, err := gid.GenShortID()                          // e.g. "a1B2cD"
 id, err = gid.GenShortID(gid.WithNumber(8))          // 8-character
 id, err = gid.GenShortID(gid.WithStartWithYear(true)) // prefixed with year
 if err != nil {

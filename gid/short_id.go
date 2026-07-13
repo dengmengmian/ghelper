@@ -17,6 +17,11 @@ import (
 
 const (
 	all = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+	// alphabetSize is the number of characters in the ID alphabet.
+	alphabetSize = 62
+	// maxByte is the largest multiple of alphabetSize below 256; bytes >= maxByte
+	// are rejected in order to eliminate modulo bias.
+	maxByte = 256 - (256 % alphabetSize) // = 248
 )
 
 var (
@@ -80,13 +85,23 @@ func Generate(opt Options) (string, error) {
 		return "", fmt.Errorf("generated ID length is too short")
 	}
 
-	data, err := generateRandomBytes(randomLength)
-	if err != nil {
+	// Over-provision random bytes: rejection sampling in the worst case
+	// rejects ~3% of bytes, so 2× randomLength is more than enough.
+	raw := make([]byte, randomLength*2)
+	if _, err := rand.Read(raw); err != nil {
 		return "", fmt.Errorf("failed to generate random bytes: %v", err)
 	}
-
-	for _, b := range data {
-		pick := int(b) % 62
+	ri := 0 // read index into raw
+	for i := 0; i < randomLength; i++ {
+		// Skip bytes that would introduce modulo bias.
+		for ri < len(raw) && raw[ri] >= maxByte {
+			ri++
+		}
+		if ri >= len(raw) {
+			return "", fmt.Errorf("insufficient unbiased random data")
+		}
+		pick := int(raw[ri]) % alphabetSize
+		ri++
 		buffer.WriteRune(_chars[pick])
 	}
 
@@ -96,19 +111,5 @@ func Generate(opt Options) (string, error) {
 func sha256hash(text string) string {
 	rawBytes := []byte(text)
 	h := sha256.Sum256(rawBytes)
-	return base64.URLEncoding.EncodeToString(h[:])[:2] // 使用 URL 安全的 Base64 编码并截取前2个字符
-}
-
-// GenerateRandomBytes returns securely generated random bytes.
-// It will return an error if the system's secure random
-// number generator fails to function correctly, in which
-// case the caller should not continue.
-func generateRandomBytes(n int) ([]byte, error) {
-	b := make([]byte, n)
-	_, err := rand.Read(b)
-	// Note that err == nil only if we read len(b) bytes.
-	if err != nil {
-		return nil, err
-	}
-	return b, nil
+	return base64.URLEncoding.EncodeToString(h[:])[:2]
 }

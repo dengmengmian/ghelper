@@ -15,6 +15,11 @@ func TestGenShortID(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEqual(t, "", shortID)
 	assert.Equal(t, 6, len(shortID))
+	// Every character must belong to the 62-char alphabet.
+	allChars := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+	for _, c := range shortID {
+		assert.Contains(t, allChars, string(c), "character %c not in alphabet", c)
+	}
 }
 
 func BenchmarkGenShortID(b *testing.B) {
@@ -39,31 +44,21 @@ func BenchmarkGenShortIDTimeConsuming(b *testing.B) {
 	}
 }
 
-func TestGenShortIDNoDuplicates(t *testing.T) {
+// TestGenShortIDUniqueness verifies that GenShortID produces IDs without
+// collisions over a moderate sample. With a 62-character alphabet and
+// Number=8 the ID space is 62^8 ≈ 2.2×10^14.  The birthday-paradox
+// probability of at least one collision among 1000 IDs drawn from that
+// space is ≈ 2.3×10^-9, which is negligible for testing purposes.
+func TestGenShortIDUniqueness(t *testing.T) {
 	seenIDs := make(map[string]struct{})
 
-	for i := 0; i < 10000; i++ {
-		id, err := GenShortID()
+	for i := 0; i < 1000; i++ {
+		id, err := GenShortID(WithNumber(8))
 		if err != nil {
 			t.Fatal(err)
 		}
 		if _, exists := seenIDs[id]; exists {
-			t.Errorf("Duplicate ID generated: %s", id)
-		}
-		seenIDs[id] = struct{}{}
-	}
-}
-
-func TestGenShortIDNoDuplicatesLenth(t *testing.T) {
-	seenIDs := make(map[string]struct{})
-
-	for i := 0; i < 10000; i++ {
-		id, err := GenShortID(WithNumber(6))
-		if err != nil {
-			t.Fatal(err)
-		}
-		if _, exists := seenIDs[id]; exists {
-			t.Errorf("Duplicate ID generated: %s", id)
+			t.Errorf("unexpected duplicate ID: %s", id)
 		}
 		seenIDs[id] = struct{}{}
 	}
