@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/gomarkdown/markdown v0.0.0-20240328165702-4d01890c35c0
 	github.com/rs/xid v1.4.0
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.11.1
 )
 
 require (
