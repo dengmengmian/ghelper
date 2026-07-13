@@ -1,5 +1,5 @@
 // Copyright 2023 Innkeeper dengmengmian(麻凡) <my@dengmengmian.com>. All rights reserved.
-// Use of this source code is governed by a Apache style
+// Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file. The original repo for
 // this file is https://github.com/dengmengmian/ghelper
 
@@ -19,18 +19,17 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"strings"
+	"sync"
 	"time"
 )
 
 var (
-	// DefaultDialer is the default net.Dialer used by the HTTP client.
-	DefaultDialer = &net.Dialer{Timeout: 2000 * time.Millisecond}
-	// DefaultTransport is the default HTTP transport.
+	DefaultDialer                      = &net.Dialer{Timeout: 2000 * time.Millisecond}
 	DefaultTransport http.RoundTripper = &http.Transport{Dial: DefaultDialer.Dial, Proxy: http.ProxyFromEnvironment}
-	// DefaultClient is the default HTTP client.
-	DefaultClient  = &http.Client{Transport: DefaultTransport}
-	proxyTransport http.RoundTripper
-	proxyClient    *http.Client
+	DefaultClient                      = &http.Client{Transport: DefaultTransport}
+	proxyMu          sync.Mutex
+	proxyTransport   http.RoundTripper
+	proxyClient      *http.Client
 )
 
 // Request represents an HTTP request to be sent.
@@ -155,6 +154,7 @@ func (r Request) Do() (*Response, error) {
 			return nil, &Error{Err: err}
 		}
 
+		proxyMu.Lock()
 		// 如果指定，则需要重新构建
 		if proxyTransport == nil || client.Jar != nil {
 			proxyTransport = &http.Transport{Dial: DefaultDialer.Dial, Proxy: http.ProxyURL(proxyUrl)}
@@ -162,6 +162,7 @@ func (r Request) Do() (*Response, error) {
 		} else if proxyTransport, ok := proxyTransport.(*http.Transport); ok {
 			proxyTransport.Proxy = http.ProxyURL(proxyUrl)
 		}
+		proxyMu.Unlock()
 		transport = proxyTransport
 		client = proxyClient
 	}

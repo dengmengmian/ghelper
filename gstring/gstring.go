@@ -1,5 +1,5 @@
 // Copyright 2023 Innkeeper dengmengmian(麻凡) <my@dengmengmian.com>. All rights reserved.
-// Use of this source code is governed by a Apache style
+// Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file. The original repo for
 // this file is https://github.com/dengmengmian/ghelper
 
@@ -16,7 +16,8 @@ import (
 	"time"
 )
 
-// StringToJson string转json
+// StringToJson parses a JSON string into a map[string]interface{}.
+// It returns an error if the input is not valid JSON.
 func StringToJson(ts string) (map[string]interface{}, error) {
 	var jsonObj map[string]interface{}
 	err := json.Unmarshal([]byte(ts), &jsonObj)
@@ -26,12 +27,14 @@ func StringToJson(ts string) (map[string]interface{}, error) {
 	return jsonObj, nil
 }
 
+// IsEmail checks whether the given byte slice is a valid email address.
 func IsEmail(b []byte) bool {
 	var emailPattern = regexp.MustCompile("[\\w!#$%&'*+/=?^_`{|}~-]+(?:\\.[\\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\\w](?:[\\w-]*[\\w])?\\.)+[a-zA-Z0-9](?:[\\w-]*[\\w])?")
 	return emailPattern.Match(b)
 }
 
-// 生成随机字符串
+// GetRandomString generates a random string of the specified length,
+// consisting of digits, lowercase letters, and uppercase letters.
 func GetRandomString(lens int) string {
 	str := "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	bytes := []byte(str)
@@ -43,7 +46,8 @@ func GetRandomString(lens int) string {
 	return string(result)
 }
 
-// md5
+// Md5 computes the MD5 hash of the given byte slice and returns it as a
+// 32-character lowercase hexadecimal string.
 func Md5(buf []byte) string {
 	hash := md5.New()
 	hash.Write(buf)

@@ -1,5 +1,5 @@
 // Copyright 2023 Innkeeper dengmengmian(麻凡) <my@dengmengmian.com>. All rights reserved.
-// Use of this source code is governed by a Apache style
+// Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file. The original repo for
 // this file is https://github.com/dengmengmian/ghelper
 
@@ -13,7 +13,6 @@ import (
 	"os"
 	"os/exec"
 	"os/user"
-	"path/filepath"
 	"runtime"
 	"strings"
 )
@@ -39,12 +38,13 @@ func IsDarwin() bool {
 	return DARWIN == runtime.GOOS
 }
 
-// Pwd gets the path of current working directory.
+// Pwd returns the current working directory.
 func Pwd() string {
-	file, _ := exec.LookPath(os.Args[0])
-	pwd, _ := filepath.Abs(file)
-
-	return filepath.Dir(pwd)
+	pwd, err := os.Getwd()
+	if err != nil {
+		return ""
+	}
+	return pwd
 }
 
 // Home returns the home directory for the executing user.

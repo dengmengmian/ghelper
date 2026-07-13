@@ -1,5 +1,5 @@
 // Copyright 2023 Innkeeper dengmengmian(麻凡) <my@dengmengmian.com>. All rights reserved.
-// Use of this source code is governed by a Apache style
+// Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file. The original repo for
 // this file is https://github.com/dengmengmian/ghelper
 
@@ -10,7 +10,6 @@ package gfile
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"os"
 	"path"
@@ -19,32 +18,32 @@ import (
 	"strings"
 )
 
-// GetSize get the file size
+// GetSize reads the full content of a multipart.File and returns its size in bytes.
 func GetSize(f multipart.File) (int, error) {
-	content, err := ioutil.ReadAll(f)
+	content, err := io.ReadAll(f)
 
 	return len(content), err
 }
 
-// GetExt get the file ext
+// GetExt returns the file extension of the given filename, including the dot.
 func GetExt(fileName string) string {
 	return path.Ext(fileName)
 }
 
-// CheckNotExist check if the file exists
+// CheckNotExist reports whether the given path does not exist.
 func CheckNotExist(src string) bool {
 	_, err := os.Stat(src)
 	return os.IsNotExist(err)
 }
 
-// CheckPermission check if the file has permission
+// CheckPermission reports whether the path cannot be accessed due to permissions.
 func CheckPermission(src string) bool {
 	_, err := os.Stat(src)
 
 	return os.IsPermission(err)
 }
 
-// IsNotExistMkDir create a directory if it does not exist
+// IsNotExistMkDir creates a directory at the given path if it does not already exist.
 func IsNotExistMkDir(src string) error {
 	if notExist := CheckNotExist(src); notExist == true {
 		if err := MkDir(src); err != nil {
@@ -54,7 +53,7 @@ func IsNotExistMkDir(src string) error {
 	return nil
 }
 
-// MkDir create a directory
+// MkDir creates a directory at the given path, including any necessary parents.
 func MkDir(src string) error {
 	err := os.MkdirAll(src, os.ModePerm)
 	if err != nil {
@@ -64,7 +63,7 @@ func MkDir(src string) error {
 	return nil
 }
 
-// Open a file according to a specific mode
+// Open opens a file with the given name, flags, and permission mode.
 func Open(name string, flag int, perm os.FileMode) (*os.File, error) {
 	f, err := os.OpenFile(name, flag, perm)
 	if err != nil {
@@ -74,7 +73,8 @@ func Open(name string, flag int, perm os.FileMode) (*os.File, error) {
 	return f, nil
 }
 
-// MustOpen maximize trying to open the file
+// MustOpen opens or creates a file under the given directory path, creating the
+// directory if needed. It appends to the file if it already exists.
 func MustOpen(fileName, filePath string) (*os.File, error) {
 	dir, err := os.Getwd()
 	if err != nil {
@@ -100,14 +100,13 @@ func MustOpen(fileName, filePath string) (*os.File, error) {
 	return f, nil
 }
 
-// IsDir determines whether the specified path is a directory.
+// IsDir reports whether the given path is a directory.
 func IsDir(path string) bool {
 	fio, err := os.Lstat(path)
 	if os.IsNotExist(err) {
 		return false
 	}
 	if nil != err {
-		fmt.Printf("Determines whether [%s] is a directory failed: [%v]", path, err)
 		return false
 	}
 	return fio.IsDir()
@@ -175,7 +174,8 @@ func CopyDir(source string, dest string) (err error) {
 	return nil
 }
 
-// FileExist 验证文件是否存在
+// FileExist returns the os.FileInfo for the given path, or nil if it does not exist.
+// An error is returned only for errors other than os.ErrNotExist.
 func FileExist(path string) (os.FileInfo, error) {
 	file, err := os.Stat(path)
 	if err == nil {
@@ -187,7 +187,8 @@ func FileExist(path string) (os.FileInfo, error) {
 	return nil, err
 }
 
-// CheckWinPath
+// CheckWinPath converts backslashes to forward slashes on Windows.
+// On other platforms it returns the path unchanged.
 func CheckWinPath(str string) string {
 	if runtime.GOOS == "windows" {
 		return strings.ReplaceAll(str, "\\", "/")

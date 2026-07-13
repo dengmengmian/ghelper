@@ -1,5 +1,5 @@
 // Copyright 2023 Innkeeper dengmengmian(麻凡) <my@dengmengmian.com>. All rights reserved.
-// Use of this source code is governed by a Apache style
+// Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file. The original repo for
 // this file is https://github.com/dengmengmian/ghelper
 
@@ -10,7 +10,6 @@ import (
 	"compress/zlib"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -46,13 +45,14 @@ func (b *Body) Close() error {
 }
 
 // FromToJson
+// FromToJson decodes the response body as JSON into the provided value.
 func (b *Body) FromToJson(o interface{}) error {
 	return json.NewDecoder(b).Decode(o)
 }
 
 // FromToString
 func (b *Body) FromToString() (string, error) {
-	body, err := ioutil.ReadAll(b)
+	body, err := io.ReadAll(b)
 	if err != nil {
 		return "", err
 	}

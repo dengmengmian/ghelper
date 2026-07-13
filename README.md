@@ -56,9 +56,12 @@ gstring.Md5([]byte("hello"))                // "5d41402abc4b2a76b9719d911017c592
 import "github.com/dengmengmian/ghelper/gid"
 
 // Short 6-character unique ID
-id := gid.GenShortID()                          // e.g. "a1b2c3"
-id = gid.GenShortID(gid.WithNumber(8))          // 8-character
-id = gid.GenShortID(gid.WithStartWithYear(true)) // prefixed with year
+id, err := gid.GenShortID()                          // e.g. "a1b2c3"
+id, err = gid.GenShortID(gid.WithNumber(8))          // 8-character
+id, err = gid.GenShortID(gid.WithStartWithYear(true)) // prefixed with year
+if err != nil {
+    // handle error
+}
 
 // Distributed unique ID (20 chars, based on xid)
 uuid := gid.UUID()                             // e.g. "cps4qlt91vg0p4h4qog0"
