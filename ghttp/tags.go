@@ -7,7 +7,6 @@ package ghttp
 
 import (
 	"strings"
-	"unicode"
 )
 
 type (
@@ -40,21 +39,4 @@ func (o tagOptions) Contains(optionName string) bool {
 		s = next
 	}
 	return false
-}
-
-// isValidTag
-func isValidTag(s string) bool {
-	if len(s) == 0 {
-		return false
-	}
-	for _, c := range s {
-		switch {
-		case strings.ContainsRune("!#$%&()*+-./:<=>?@[]^_{|}~ ", c):
-		default:
-			if !unicode.IsLetter(c) && !unicode.IsDigit(c) {
-				return false
-			}
-		}
-	}
-	return true
 }

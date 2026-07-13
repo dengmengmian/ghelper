@@ -62,7 +62,6 @@ func (r Request) addHeaders(headersMap http.Header) {
 	}
 }
 
-// Return value if nonempty, def otherwise.
 // valueOrDefault returns value if it is non-empty, otherwise def.
 func valueOrDefault(value, def string) string {
 	if value != "" {
@@ -73,17 +72,17 @@ func valueOrDefault(value, def string) string {
 
 // paramParse
 func paramParse(query interface{}) (string, error) {
-	switch query.(type) {
+	switch v := query.(type) {
 	case url.Values:
-		return query.(url.Values).Encode(), nil
+		return v.Encode(), nil
 	case *url.Values:
-		return query.(*url.Values).Encode(), nil
+		return v.Encode(), nil
 	default:
 		var (
-			v = &url.Values{}
+			vals = &url.Values{}
 		)
-		err := paramParseStruct(v, query)
-		return v.Encode(), err
+		err := paramParseStruct(vals, query)
+		return vals.Encode(), err
 	}
 }
 
@@ -147,21 +146,21 @@ func paramParseStruct(v *url.Values, query interface{}) error {
 }
 
 func prepareRequestBody(b interface{}) (io.Reader, error) {
-	switch b.(type) {
+	switch v := b.(type) {
 	case string:
-		return strings.NewReader(b.(string)), nil
+		return strings.NewReader(v), nil
 	case io.Reader:
-		return b.(io.Reader), nil
+		return v, nil
 	case []byte:
-		return bytes.NewReader(b.([]byte)), nil
+		return bytes.NewReader(v), nil
 	case url.Values:
-		return strings.NewReader(b.(url.Values).Encode()), nil
+		return strings.NewReader(v.Encode()), nil
 	case *url.Values:
-		return strings.NewReader(b.(*url.Values).Encode()), nil
+		return strings.NewReader(v.Encode()), nil
 	case nil:
 		return nil, nil
 	default:
-		j, err := json.Marshal(b)
+		j, err := json.Marshal(v)
 		if err == nil {
 			return bytes.NewReader(j), nil
 		}
@@ -169,9 +168,10 @@ func prepareRequestBody(b interface{}) (io.Reader, error) {
 	}
 }
 
-// GetTlsConfig 生成tls config
+// GetTlsConfig loads an X509 key pair from the given certificate and key files
+// and returns a *tls.Config. If loading fails, it returns a config that skips
+// certificate verification.
 func GetTlsConfig(cerPath, keyPath string) *tls.Config {
-	// get certs
 	certs, err := tls.LoadX509KeyPair(cerPath, keyPath)
 	if err != nil {
 		return &tls.Config{InsecureSkipVerify: true}

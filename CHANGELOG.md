@@ -12,6 +12,12 @@ All notable changes to this project will be documented in this file.
   more likely than specified.
 
 ### Added
+- Godoc `Example` functions for every package (`gconvert`, `gstring`, `gid`,
+  `gfile`, `ghttp`, `gip`, `gmarkdown`, `gos`) — each example compiles and
+  executes as part of `go test`, with `// Output:` assertions where the API
+  is deterministic.
+- `SECURITY.md` with vulnerability reporting process and supported versions.
+- `.github/dependabot.yml` for automated Go module and GitHub Actions updates.
 - Comprehensive unit tests for all packages (`gconvert`, `gstring`, `gfile`, `ghttp`, `gip`, `gos`, `gmarkdown`, `gid`).
 - GitHub Actions CI workflow for build, vet, and race-detector tests.
 - `CONTRIBUTING.md` with contribution guidelines.

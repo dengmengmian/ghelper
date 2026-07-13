@@ -140,8 +140,8 @@ func TestQuerySquash(t *testing.T) {
 		Sex      string `json:"sex"`
 	}
 	type GoPher struct {
-		Id   int32 `json:"id"`
-		User `json:",squash"`
+		Id   int32            `json:"id"`
+		User `json:",squash"` //nolint:staticcheck // squash is a custom ghttp tag, not a standard JSON option
 	}
 	gopher := GoPher{
 		User: User{Name: "xc", Password: "xc", Sex: "1"},

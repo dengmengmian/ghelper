@@ -25,10 +25,6 @@ type apiError interface {
 	Error() string
 }
 
-const (
-	gGCONV_TAG = "gconv"
-)
-
 var (
 	// Empty strings.
 	emptyStringMap = map[string]struct{}{
@@ -38,9 +34,6 @@ var (
 		"off":   {},
 		"false": {},
 	}
-
-	// Priority tags for Map*/Struct* functions.
-	structTagPriority = []string{gGCONV_TAG, "c", "json"}
 )
 
 // Convert converts the variable <i> to the type <t>, the type <t> is specified by string.

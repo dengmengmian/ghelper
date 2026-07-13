@@ -21,7 +21,9 @@ type headerElements struct {
 
 // SetConnectTimeout sets the default dialer timeout for new connections.
 func SetConnectTimeout(duration time.Duration) {
+	dialerMu.Lock()
 	DefaultDialer.Timeout = duration
+	dialerMu.Unlock()
 }
 
 // AddHeader adds a custom HTTP header to the request.
