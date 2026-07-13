@@ -76,8 +76,11 @@ func (r Request) NewRequest() (*http.Request, error) {
 		if e != nil {
 			return nil, &Error{Err: e}
 		}
-		// http://127.0.0.1?user={}
-		r.Url = r.Url + "?" + param
+		if strings.Contains(r.Url, "?") {
+			r.Url = r.Url + "&" + param
+		} else {
+			r.Url = r.Url + "?" + param
+		}
 	}
 
 	var (
@@ -244,6 +247,7 @@ func (r Request) Do() (*Response, error) {
 						reader: res.Body,
 					},
 					req,
+					transport,
 				}
 			} else {
 				response = &Response{
@@ -251,6 +255,7 @@ func (r Request) Do() (*Response, error) {
 					resURL,
 					nil,
 					req,
+					transport,
 				}
 			}
 		}
@@ -277,6 +282,7 @@ func (r Request) Do() (*Response, error) {
 					compressedReader: compressedReader,
 				},
 				req,
+				transport,
 			},
 			nil
 	}
@@ -287,13 +293,18 @@ func (r Request) Do() (*Response, error) {
 				reader: res.Body,
 			},
 			req,
+			transport,
 		},
 		nil
 }
 
 // CancelRequest cancel like postman
 func (r Response) CancelRequest() {
-	cancelRequest(DefaultTransport, r.req)
+	transport := r.transport
+	if transport == nil {
+		transport = DefaultTransport
+	}
+	cancelRequest(transport, r.req)
 }
 
 // cancelRequest

@@ -16,9 +16,10 @@ import (
 // Response ghttp response
 type Response struct {
 	*http.Response
-	Url  string
-	Body *Body
-	req  *http.Request
+	Url       string
+	Body      *Body
+	req       *http.Request
+	transport http.RoundTripper
 }
 
 // Body

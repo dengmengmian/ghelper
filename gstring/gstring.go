@@ -16,6 +16,8 @@ import (
 	"time"
 )
 
+var emailPattern = regexp.MustCompile(`[\w!#$%&'*+/=?^_` + "`" + `{|}~-]+(?:\.[\w!#$%&'*+/=?^_` + "`" + `{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[a-zA-Z0-9](?:[\w-]*[\w])?`)
+
 // StringToJson parses a JSON string into a map[string]interface{}.
 // It returns an error if the input is not valid JSON.
 func StringToJson(ts string) (map[string]interface{}, error) {
@@ -29,7 +31,6 @@ func StringToJson(ts string) (map[string]interface{}, error) {
 
 // IsEmail checks whether the given byte slice is a valid email address.
 func IsEmail(b []byte) bool {
-	var emailPattern = regexp.MustCompile("[\\w!#$%&'*+/=?^_`{|}~-]+(?:\\.[\\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\\w](?:[\\w-]*[\\w])?\\.)+[a-zA-Z0-9](?:[\\w-]*[\\w])?")
 	return emailPattern.Match(b)
 }
 

@@ -75,13 +75,22 @@ func Open(name string, flag int, perm os.FileMode) (*os.File, error) {
 
 // MustOpen opens or creates a file under the given directory path, creating the
 // directory if needed. It appends to the file if it already exists.
+//
+// Deprecated: the name is misleading. Unlike Go's MustX convention (which panics
+// on error), this function returns an error. Use OpenInDir instead.
 func MustOpen(fileName, filePath string) (*os.File, error) {
+	return OpenInDir(fileName, filePath)
+}
+
+// OpenInDir opens or creates a file under the given directory path, creating the
+// directory if needed. It appends to the file if it already exists.
+func OpenInDir(fileName, dirPath string) (*os.File, error) {
 	dir, err := os.Getwd()
 	if err != nil {
 		return nil, fmt.Errorf("os.Getwd err: %v", err)
 	}
 
-	src := dir + "/" + filePath
+	src := filepath.Join(dir, dirPath)
 	perm := CheckPermission(src)
 	if perm {
 		return nil, fmt.Errorf("file.CheckPermission Permission denied src: %s", src)
@@ -92,7 +101,7 @@ func MustOpen(fileName, filePath string) (*os.File, error) {
 		return nil, fmt.Errorf("file.IsNotExistMkDir src: %s, err: %v", src, err)
 	}
 
-	f, err := Open(src+fileName, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0644)
+	f, err := Open(filepath.Join(src, fileName), os.O_APPEND|os.O_CREATE|os.O_RDWR, 0644)
 	if err != nil {
 		return nil, fmt.Errorf("Fail to OpenFile :%v", err)
 	}
